@@ -3,18 +3,20 @@ import { PlaywrightCrawler } from 'crawlee';
 import type { Input } from './types.js';
 import { scrapeLatestPost } from './scraper.js';
 import { getLastSeenKey, setLastSeenKey } from './deduplication.js';
-import { sendSlackNotification } from './slack.js';
+import { sendEmailNotification } from './email.js';
 
 await Actor.init();
 
 const input = await Actor.getInput<Input>();
-if (!input?.groupUrls?.length || !input.slackWebhookUrl) {
-  throw new Error('Input must include groupUrls and slackWebhookUrl');
+if (!input?.groupUrls?.length || !input.recipientEmail || !input.senderEmail || !input.senderPassword) {
+  throw new Error('Input must include groupUrls, recipientEmail, senderEmail, and senderPassword');
 }
 
 const {
   groupUrls,
-  slackWebhookUrl,
+  recipientEmail,
+  senderEmail,
+  senderPassword,
   ignoreKeywords = [],
   useResidentialProxy = true,
 } = input;
@@ -41,7 +43,7 @@ const crawler = new PlaywrightCrawler({
       );
       if (isIgnored) return;
 
-      await sendSlackNotification(slackWebhookUrl, groupUrl, post.text);
+      await sendEmailNotification(senderEmail, senderPassword, recipientEmail, groupUrl, post.text);
       await Actor.pushData({ groupUrl, postText: post.text });
     } catch (err) {
       console.error(`Failed to process ${groupUrl}:`, err);

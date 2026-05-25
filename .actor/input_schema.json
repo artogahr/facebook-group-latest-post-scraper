@@ -10,11 +10,24 @@
       "items": { "type": "string" },
       "editor": "stringList"
     },
-    "slackWebhookUrl": {
-      "title": "Slack Webhook URL",
+    "recipientEmail": {
+      "title": "Recipient Email",
       "type": "string",
-      "description": "Slack Incoming Webhook URL",
+      "description": "Email address to send notifications to",
       "editor": "textfield"
+    },
+    "senderEmail": {
+      "title": "Sender Gmail Address",
+      "type": "string",
+      "description": "Gmail address to send notifications from",
+      "editor": "textfield"
+    },
+    "senderPassword": {
+      "title": "Sender Gmail App Password",
+      "type": "string",
+      "description": "Google App Password for the sender Gmail account (generate at myaccount.google.com → Security → App Passwords)",
+      "editor": "textfield",
+      "isSecret": true
     },
     "ignoreKeywords": {
       "title": "Ignore Keywords",
@@ -31,5 +44,5 @@
       "default": true
     }
   },
-  "required": ["groupUrls", "slackWebhookUrl"]
+  "required": ["groupUrls", "recipientEmail", "senderEmail", "senderPassword"]
 }

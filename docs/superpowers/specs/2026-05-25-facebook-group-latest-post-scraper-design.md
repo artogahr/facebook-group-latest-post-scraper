@@ -26,7 +26,8 @@ An Apify actor that periodically checks a list of Facebook group URLs for new po
 - **Proxy:** Apify residential proxy pool when `useResidentialProxy` is true
 - **Target element:** `[data-ad-rendering-role="story_message"]` — the first post's content block, present in the DOM even behind the login modal
 - **Login modal:** Ignored — content is accessible beneath it without interaction
-- **Post deduplication key:** The post's permalink (`/groups/.../posts/...`) extracted from an anchor tag near the post element. Falls back to a SHA-256 hash of the post text if no permalink is found.
+- **Post deduplication key:** The post's permalink (`/groups/.../posts/...`) extracted from an anchor tag within the post's parent container. Falls back to a SHA-256 hash of the post text if no permalink is found.
+- **Error handling:** If scraping fails for a group (element not found, navigation error, etc.), the actor logs the error and continues to the next group. Per-group failures are non-fatal.
 - **Post text:** Full text content of the `story_message` element
 
 ---
