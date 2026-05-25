@@ -9,6 +9,6 @@ export async function sendSlackNotification(
     body: JSON.stringify({ text: `New post in ${groupUrl}:\n\n${postText}` }),
   });
   if (!response.ok) {
-    throw new Error(`Slack notification failed: ${response.status}`);
+    throw new Error(`Slack notification failed: ${response.status} ${response.statusText}`);
   }
 }
