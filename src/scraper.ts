@@ -2,8 +2,7 @@ import { createHash } from 'crypto';
 import type { Page } from 'playwright';
 import type { Post } from './types.js';
 
-export function extractDedupKey(permalink: string | null, text: string): string {
-  if (permalink) return permalink;
+export function extractDedupKey(text: string): string {
   return createHash('sha256').update(text).digest('hex');
 }
 
@@ -15,22 +14,13 @@ export async function scrapeLatestPost(page: Page, groupUrl: string): Promise<Po
     if (!storyEl) return null;
 
     const text = storyEl.textContent?.trim() ?? '';
-    const container =
-      storyEl.closest('div[role="article"]') ??
-      storyEl.closest('[data-pagelet]') ??
-      storyEl.parentElement?.parentElement?.parentElement;
-    const permalink =
-      container
-        ?.querySelector('a[href*="/groups/"][href*="/posts/"]')
-        ?.getAttribute('href') ?? null;
-
-    return { text, permalink };
+    return { text };
   });
 
   if (!result) return null;
 
   return {
-    dedupKey: extractDedupKey(result.permalink, result.text),
+    dedupKey: extractDedupKey(result.text),
     text: result.text,
     groupUrl,
   };
