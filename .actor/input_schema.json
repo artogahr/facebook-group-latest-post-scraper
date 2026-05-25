@@ -1,0 +1,35 @@
+{
+  "title": "Facebook Group Latest Post Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "groupUrls": {
+      "title": "Group URLs",
+      "type": "array",
+      "description": "List of Facebook group URLs to monitor",
+      "items": { "type": "string" },
+      "editor": "stringList"
+    },
+    "slackWebhookUrl": {
+      "title": "Slack Webhook URL",
+      "type": "string",
+      "description": "Slack Incoming Webhook URL",
+      "editor": "textfield"
+    },
+    "ignoreKeywords": {
+      "title": "Ignore Keywords",
+      "type": "array",
+      "description": "Posts containing any of these words (case-insensitive) will be skipped",
+      "items": { "type": "string" },
+      "editor": "stringList",
+      "default": []
+    },
+    "useResidentialProxy": {
+      "title": "Use Residential Proxy",
+      "type": "boolean",
+      "description": "Use Apify residential proxies to avoid being blocked by Facebook",
+      "default": true
+    }
+  },
+  "required": ["groupUrls", "slackWebhookUrl"]
+}
