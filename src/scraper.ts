@@ -14,7 +14,9 @@ export async function scrapeLatestPost(page: Page, groupUrl: string): Promise<Po
     if (!storyEl) return null;
 
     const text = storyEl.textContent?.trim() ?? '';
-    return { text };
+    const linkEl = document.querySelector('a[href*="/posts/"], a[href*="/permalink/"]');
+    const url = linkEl?.getAttribute('href') ?? null;
+    return { text, url };
   });
 
   if (!result) return null;
@@ -22,6 +24,7 @@ export async function scrapeLatestPost(page: Page, groupUrl: string): Promise<Po
   return {
     dedupKey: extractDedupKey(result.text),
     text: result.text,
+    url: result.url,
     groupUrl,
   };
 }

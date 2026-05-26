@@ -45,12 +45,13 @@ const crawler = new PlaywrightCrawler({
       );
       if (isIgnored) return;
 
+      const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
       await Actor.call('apify/send-mail', {
         to: recipientEmail,
         subject: `New post in ${groupUrl}`,
-        text: post.text,
+        text: body,
       });
-      await Actor.pushData({ groupUrl, postText: post.text });
+      await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
     } catch (err) {
       console.error(`Failed to process ${groupUrl}:`, err);
       const screenshot = await page.screenshot();
