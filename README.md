@@ -6,7 +6,7 @@ Monitors one or more Facebook groups and sends you an email when a new post appe
 
 Each run visits the group pages, grabs the latest post, and compares it against the last seen post stored in Apify's Key-Value Store. If it's new, it sends an email via `apify/send-mail` and saves the post to the dataset. If nothing changed, it exits quietly.
 
-Meant to be run on a schedule — every 30 minutes or so.
+Meant to be run on a schedule. Only works with public groups.
 
 ## Input
 
