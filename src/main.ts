@@ -3,7 +3,6 @@ import { PlaywrightCrawler } from 'crawlee';
 import type { Input } from './types.js';
 import { scrapeLatestPost } from './scraper.js';
 import { getLastSeenKey, setLastSeenKey } from './deduplication.js';
-import { sendEmailNotification } from './email.js';
 
 await Actor.init();
 
@@ -46,7 +45,11 @@ const crawler = new PlaywrightCrawler({
       );
       if (isIgnored) return;
 
-      await sendEmailNotification(recipientEmail, groupUrl, post.text);
+      await Actor.call('apify/send-mail', {
+        to: recipientEmail,
+        subject: `New post in ${groupUrl}`,
+        text: post.text,
+      });
       await Actor.pushData({ groupUrl, postText: post.text });
     } catch (err) {
       console.error(`Failed to process ${groupUrl}:`, err);
