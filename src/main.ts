@@ -31,34 +31,32 @@ const crawler = new PlaywrightCrawler({
   },
   requestHandler: async ({ page, request }) => {
     const groupUrl = request.url;
-    try {
-      const post = await scrapeLatestPost(page, groupUrl);
-      if (!post) return;
+    const post = await scrapeLatestPost(page, groupUrl);
+    if (!post) return;
 
-      const lastKey = await getLastSeenKey(groupUrl);
-      if (lastKey === post.dedupKey) return;
+    const lastKey = await getLastSeenKey(groupUrl);
+    if (lastKey === post.dedupKey) return;
 
-      await setLastSeenKey(groupUrl, post.dedupKey);
+    await setLastSeenKey(groupUrl, post.dedupKey);
 
-      const isIgnored = ignoreKeywords.some((kw) =>
-        post.text.toLowerCase().includes(kw.toLowerCase()),
-      );
-      if (isIgnored) return;
+    const isIgnored = ignoreKeywords.some((kw) =>
+      post.text.toLowerCase().includes(kw.toLowerCase()),
+    );
+    if (isIgnored) return;
 
-      const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
-      await Actor.call('apify/send-mail', {
-        to: recipientEmail,
-        subject: `New post in ${groupUrl}`,
-        text: body,
-      });
-      await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
-    } catch (err) {
-      console.error(`Failed to process ${groupUrl}:`, err);
-      const screenshot = await page.screenshot();
-      const store = await KeyValueStore.open();
-      await store.setValue('debug-screenshot', screenshot, { contentType: 'image/png' });
-      console.log('Debug screenshot saved to KV store as debug-screenshot');
-    }
+    const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
+    await Actor.call('apify/send-mail', {
+      to: recipientEmail,
+      subject: `New post in ${groupUrl}`,
+      text: body,
+    });
+    await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
+  },
+  failedRequestHandler: async ({ page, request }, error) => {
+    console.error(`Giving up on ${request.url} after ${request.retryCount} retries:`, error);
+    const screenshot = await page.screenshot();
+    const store = await KeyValueStore.open();
+    await store.setValue(`failed-${request.id}`, screenshot, { contentType: 'image/png' });
   },
 });
 
