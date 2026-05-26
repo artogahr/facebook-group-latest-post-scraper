@@ -5,9 +5,7 @@ export async function sendEmailNotification(
   groupUrl: string,
   postText: string,
 ): Promise<void> {
-  const token = process.env.FULL_APIFY_TOKEN;
-  const client = Actor.newClient(token ? { token } : {});
-  await client.actor('apify/send-mail').call({
+  await Actor.call('apify/send-mail', {
     to: recipientEmail,
     subject: `New post in ${groupUrl}`,
     text: postText,
