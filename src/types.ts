@@ -1,8 +1,6 @@
 export interface Input {
   groupUrls: string[];
   recipientEmail: string;
-  senderEmail: string;
-  senderPassword: string;
   ignoreKeywords?: string[];
   useResidentialProxy?: boolean;
 }

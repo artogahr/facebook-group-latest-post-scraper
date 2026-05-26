@@ -10,12 +10,10 @@
   },
   "dependencies": {
     "apify": "^3",
-    "crawlee": "^3",
-    "nodemailer": "^8.0.8"
+    "crawlee": "^3"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/nodemailer": "^8.0.0",
     "playwright": "^1.60.0",
     "typescript": "^5",
     "vitest": "^2"

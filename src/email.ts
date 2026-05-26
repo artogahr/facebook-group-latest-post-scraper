@@ -1,19 +1,11 @@
-import nodemailer from 'nodemailer';
+import { Actor } from 'apify';
 
 export async function sendEmailNotification(
-  senderEmail: string,
-  senderPassword: string,
   recipientEmail: string,
   groupUrl: string,
   postText: string,
 ): Promise<void> {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user: senderEmail, pass: senderPassword },
-  });
-
-  await transporter.sendMail({
-    from: senderEmail,
+  await Actor.call('apify/send-mail', {
     to: recipientEmail,
     subject: `New post in ${groupUrl}`,
     text: postText,

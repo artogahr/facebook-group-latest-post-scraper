@@ -8,15 +8,13 @@ import { sendEmailNotification } from './email.js';
 await Actor.init();
 
 const input = await Actor.getInput<Input>();
-if (!input?.groupUrls?.length || !input.recipientEmail || !input.senderEmail || !input.senderPassword) {
-  throw new Error('Input must include groupUrls, recipientEmail, senderEmail, and senderPassword');
+if (!input?.groupUrls?.length || !input.recipientEmail) {
+  throw new Error('Input must include groupUrls and recipientEmail');
 }
 
 const {
   groupUrls,
   recipientEmail,
-  senderEmail,
-  senderPassword,
   ignoreKeywords = [],
   useResidentialProxy = true,
 } = input;
@@ -43,7 +41,7 @@ const crawler = new PlaywrightCrawler({
       );
       if (isIgnored) return;
 
-      await sendEmailNotification(senderEmail, senderPassword, recipientEmail, groupUrl, post.text);
+      await sendEmailNotification(recipientEmail, groupUrl, post.text);
       await Actor.pushData({ groupUrl, postText: post.text });
     } catch (err) {
       console.error(`Failed to process ${groupUrl}:`, err);
