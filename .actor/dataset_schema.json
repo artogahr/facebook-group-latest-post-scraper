@@ -1,0 +1,40 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "type": "object",
+    "required": ["groupUrl", "postText"],
+    "properties": {
+      "groupUrl": {
+        "type": "string",
+        "title": "Group URL",
+        "description": "The Facebook group URL where the post was found"
+      },
+      "postText": {
+        "type": "string",
+        "title": "Post text",
+        "description": "The text content of the post"
+      },
+      "postUrl": {
+        "type": ["string", "null"],
+        "title": "Post URL",
+        "description": "Direct link to the post on Facebook (may be null if not extracted)"
+      }
+    }
+  },
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": ["groupUrl", "postText", "postUrl"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "groupUrl": { "label": "Group", "format": "link" },
+          "postText": { "label": "Post" },
+          "postUrl": { "label": "Link", "format": "link" }
+        }
+      }
+    }
+  }
+}
