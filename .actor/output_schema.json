@@ -4,6 +4,7 @@
   "description": "New posts detected in monitored Facebook groups",
   "properties": {
     "posts": {
+      "type": "string",
       "title": "New posts",
       "description": "Posts found since the last run, one row per group with a new post",
       "template": "{{links.apiDefaultDatasetUrl}}/items"
