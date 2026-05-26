@@ -1,4 +1,4 @@
-import { Actor } from 'apify';
+import { Actor, KeyValueStore } from 'apify';
 import { PlaywrightCrawler } from 'crawlee';
 import type { Input } from './types.js';
 import { scrapeLatestPost } from './scraper.js';
@@ -25,6 +25,11 @@ const proxyConfiguration = useResidentialProxy
 
 const crawler = new PlaywrightCrawler({
   proxyConfiguration,
+  launchContext: {
+    launchOptions: {
+      args: ['--disable-blink-features=AutomationControlled'],
+    },
+  },
   requestHandler: async ({ page, request }) => {
     const groupUrl = request.url;
     try {
@@ -45,6 +50,10 @@ const crawler = new PlaywrightCrawler({
       await Actor.pushData({ groupUrl, postText: post.text });
     } catch (err) {
       console.error(`Failed to process ${groupUrl}:`, err);
+      const screenshot = await page.screenshot();
+      const store = await KeyValueStore.open();
+      await store.setValue('debug-screenshot', screenshot, { contentType: 'image/png' });
+      console.log('Debug screenshot saved to KV store as debug-screenshot');
     }
   },
 });

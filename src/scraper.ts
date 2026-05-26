@@ -7,7 +7,7 @@ export function extractDedupKey(text: string): string {
 }
 
 export async function scrapeLatestPost(page: Page, groupUrl: string): Promise<Post | null> {
-  await page.waitForSelector('[data-ad-rendering-role="story_message"]', { timeout: 15000 });
+  await page.waitForSelector('[data-ad-rendering-role="story_message"]', { timeout: 30000 });
 
   const result = await page.evaluate(() => {
     const storyEl = document.querySelector('[data-ad-rendering-role="story_message"]');
