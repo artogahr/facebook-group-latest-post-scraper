@@ -1,3 +1,4 @@
+// apify-cli can generate this for you - apify actor generate-schema-types
 export interface Input {
   groupUrls: string[];
   recipientEmail: string;

@@ -1,3 +1,5 @@
+// i would love some test on the extraction itself
+// left comments about how on scraper.ts file
 import { describe, it, expect } from 'vitest';
 import { createHash } from 'crypto';
 import { extractDedupKey } from '../src/scraper.js';

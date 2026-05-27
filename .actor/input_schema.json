@@ -8,13 +8,15 @@
       "type": "array",
       "description": "List of Facebook group URLs to monitor",
       "items": { "type": "string" },
-      "editor": "stringList"
+      "editor": "stringList",
+      "minItems": 1
     },
     "recipientEmail": {
       "title": "Recipient Email",
       "type": "string",
       "description": "Email address to send notifications to (must match your Apify account email on free plan)",
-      "editor": "textfield"
+      "editor": "textfield",
+      "minLength": 1
     },
     "ignoreKeywords": {
       "title": "Ignore Keywords",

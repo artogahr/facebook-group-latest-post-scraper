@@ -1,3 +1,4 @@
+// this is dead code :eyes:
 export async function sendSlackNotification(
   webhookUrl: string,
   groupUrl: string,
