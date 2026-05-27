@@ -37,20 +37,24 @@ const crawler = new PlaywrightCrawler({
     const lastKey = await getLastSeenKey(groupUrl);
     if (lastKey === post.dedupKey) return;
 
-    await setLastSeenKey(groupUrl, post.dedupKey);
-
     const isIgnored = ignoreKeywords.some((kw) =>
       post.text.toLowerCase().includes(kw.toLowerCase()),
     );
-    if (isIgnored) return;
 
-    const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
-    await Actor.call('apify/send-mail', {
-      to: recipientEmail,
-      subject: `New post in ${groupUrl}`,
-      text: body,
-    });
-    await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
+    if (!isIgnored) {
+      const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
+      await Actor.call('apify/send-mail', {
+        to: recipientEmail,
+        subject: `New post in ${groupUrl}`,
+        text: body,
+      });
+      await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
+    }
+
+    // Persist the dedup key only after a successful send. If send-mail throws,
+    // the key is left untouched so the retry (or next run) tries again instead
+    // of silently treating the post as already-seen.
+    await setLastSeenKey(groupUrl, post.dedupKey);
   },
   failedRequestHandler: async ({ page, request }, error) => {
     console.error(`Giving up on ${request.url} after ${request.retryCount} retries:`, error);
