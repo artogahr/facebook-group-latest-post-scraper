@@ -9,6 +9,9 @@ export function extractDedupKey(text: string): string {
 export async function scrapeLatestPost(page: Page, groupUrl: string): Promise<Post | null> {
   await page.waitForSelector('[data-ad-rendering-role="story_message"]', { timeout: 30000 });
 
+  // if you get the html and use cheerio or something like that you can set this up in a testable manner
+  // by getting the html -> extraction part of this function into a separate testable function
+  // then you can set some html fixtures for the tests to use
   const result = await page.evaluate(() => {
     const storyEl = document.querySelector('[data-ad-rendering-role="story_message"]');
     if (!storyEl) return null;
