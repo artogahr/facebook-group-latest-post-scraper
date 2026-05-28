@@ -1,6 +1,6 @@
 import { Actor, KeyValueStore } from 'apify';
 import { PlaywrightCrawler } from 'crawlee';
-import type { Input } from './types.js';
+import type { Input } from './__generated__/actor/input.js';
 import { scrapeLatestPost } from './scraper.js';
 import { getLastSeenKey, setLastSeenKey } from './deduplication.js';
 import { sendSlackNotification } from './slack.js';
@@ -19,8 +19,8 @@ const {
   groupUrls,
   recipientEmail,
   slackWebhookUrl,
-  ignoreKeywords = [],
-  useResidentialProxy = true,
+  ignoreKeywords,
+  useResidentialProxy,
 } = input;
 
 const proxyConfiguration = useResidentialProxy
