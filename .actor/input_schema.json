@@ -8,7 +8,8 @@
       "type": "array",
       "description": "List of Facebook group URLs to monitor",
       "items": { "type": "string" },
-      "editor": "stringList"
+      "editor": "stringList",
+      "minItems": 1
     },
     "recipientEmail": {
       "title": "Recipient Email",
