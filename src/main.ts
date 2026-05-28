@@ -3,17 +3,22 @@ import { PlaywrightCrawler } from 'crawlee';
 import type { Input } from './types.js';
 import { scrapeLatestPost } from './scraper.js';
 import { getLastSeenKey, setLastSeenKey } from './deduplication.js';
+import { sendSlackNotification } from './slack.js';
 
 await Actor.init();
 
 const input = await Actor.getInput<Input>();
-if (!input?.groupUrls?.length || !input.recipientEmail) {
-  throw new Error('Input must include groupUrls and recipientEmail');
+if (!input?.groupUrls?.length) {
+  throw new Error('Input must include groupUrls');
+}
+if (!input.recipientEmail && !input.slackWebhookUrl) {
+  throw new Error('Input must include at least one of recipientEmail or slackWebhookUrl');
 }
 
 const {
   groupUrls,
   recipientEmail,
+  slackWebhookUrl,
   ignoreKeywords = [],
   useResidentialProxy = true,
 } = input;
@@ -43,15 +48,20 @@ const crawler = new PlaywrightCrawler({
 
     if (!isIgnored) {
       const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
-      await Actor.call('apify/send-mail', {
-        to: recipientEmail,
-        subject: `New post in ${groupUrl}`,
-        text: body,
-      });
+      if (recipientEmail) {
+        await Actor.call('apify/send-mail', {
+          to: recipientEmail,
+          subject: `New post in ${groupUrl}`,
+          text: body,
+        });
+      }
+      if (slackWebhookUrl) {
+        await sendSlackNotification(slackWebhookUrl, groupUrl, body);
+      }
       await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
     }
 
-    // Persist the dedup key only after a successful send. If send-mail throws,
+    // Persist the dedup key only after successful sends. If a send throws,
     // the key is left untouched so the retry (or next run) tries again instead
     // of silently treating the post as already-seen.
     await setLastSeenKey(groupUrl, post.dedupKey);

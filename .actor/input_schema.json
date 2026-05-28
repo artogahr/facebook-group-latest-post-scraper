@@ -13,8 +13,15 @@
     "recipientEmail": {
       "title": "Recipient Email",
       "type": "string",
-      "description": "Email address to send notifications to (must match your Apify account email on free plan)",
+      "description": "Email address to send notifications to (must match your Apify account email on free plan). At least one of recipientEmail or slackWebhookUrl is required.",
       "editor": "textfield"
+    },
+    "slackWebhookUrl": {
+      "title": "Slack Webhook URL",
+      "type": "string",
+      "description": "Slack incoming webhook URL to post notifications to. At least one of recipientEmail or slackWebhookUrl is required.",
+      "editor": "textfield",
+      "isSecret": true
     },
     "ignoreKeywords": {
       "title": "Ignore Keywords",
@@ -31,5 +38,5 @@
       "default": true
     }
   },
-  "required": ["groupUrls", "recipientEmail"]
+  "required": ["groupUrls"]
 }

@@ -1,6 +1,7 @@
 export interface Input {
   groupUrls: string[];
-  recipientEmail: string;
+  recipientEmail?: string;
+  slackWebhookUrl?: string;
   ignoreKeywords?: string[];
   useResidentialProxy?: boolean;
 }
