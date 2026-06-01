@@ -60,7 +60,7 @@ const crawler = new PlaywrightCrawler({
           to: recipientEmail,
           subject: `New post in ${groupUrl}`,
           text: body,
-        }, { build: "staging" });
+        });
       }
       if (slackWebhookUrl) {
         await sendSlackNotification(slackWebhookUrl, groupUrl, body);
