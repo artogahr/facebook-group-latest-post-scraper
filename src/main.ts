@@ -1,18 +1,22 @@
-import { Actor, KeyValueStore } from 'apify';
-import { PlaywrightCrawler } from 'crawlee';
-import type { Input } from './__generated__/actor/input.js';
-import { scrapeLatestPost } from './scraper.js';
-import { getLastSeenKey, setLastSeenKey } from './deduplication.js';
-import { sendSlackNotification } from './slack.js';
+import { Actor, KeyValueStore } from "apify";
+import { PlaywrightCrawler } from "crawlee";
+import type { Input } from "./__generated__/actor/input.js";
+import { scrapeLatestPost } from "./scraper.js";
+import { getLastSeenKey, setLastSeenKey } from "./deduplication.js";
+import { sendSlackNotification } from "./slack.js";
 
+// @see node_modules/apify/dist/actor.js:224
 await Actor.init();
 
+// @see node_modules/apify/dist/actor.js:804
 const input = await Actor.getInput<Input>();
 if (!input?.groupUrls?.length) {
-  throw new Error('Input must include groupUrls');
+  throw new Error("Input must include groupUrls");
 }
 if (!input.recipientEmail && !input.slackWebhookUrl) {
-  throw new Error('Input must include at least one of recipientEmail or slackWebhookUrl');
+  throw new Error(
+    "Input must include at least one of recipientEmail or slackWebhookUrl",
+  );
 }
 
 const {
@@ -24,14 +28,15 @@ const {
 } = input;
 
 const proxyConfiguration = useResidentialProxy
-  ? await Actor.createProxyConfiguration({ groups: ['RESIDENTIAL'] })
+  ? // @see node_modules/apify/dist/actor.js:926
+    await Actor.createProxyConfiguration({ groups: ["RESIDENTIAL"] })
   : undefined;
 
 const crawler = new PlaywrightCrawler({
   proxyConfiguration,
   launchContext: {
     launchOptions: {
-      args: ['--disable-blink-features=AutomationControlled'],
+      args: ["--disable-blink-features=AutomationControlled"],
     },
   },
   requestHandler: async ({ page, request }) => {
@@ -49,7 +54,9 @@ const crawler = new PlaywrightCrawler({
     if (!isIgnored) {
       const body = post.url ? `${post.text}\n\n${post.url}` : post.text;
       if (recipientEmail) {
-        await Actor.call('apify/send-mail', {
+        // @see node_modules/apify/dist/actor.js:401 → node_modules/apify-client/dist/resource_clients/actor.js:193
+        // options: build, contentType, memory, timeout, waitSecs, webhooks, maxItems, log
+        await Actor.call("apify/send-mail", {
           to: recipientEmail,
           subject: `New post in ${groupUrl}`,
           text: body,
@@ -58,7 +65,12 @@ const crawler = new PlaywrightCrawler({
       if (slackWebhookUrl) {
         await sendSlackNotification(slackWebhookUrl, groupUrl, body);
       }
-      await Actor.pushData({ groupUrl, postText: post.text, postUrl: post.url });
+      // @see node_modules/apify/dist/actor.js:665
+      await Actor.pushData({
+        groupUrl,
+        postText: post.text,
+        postUrl: post.url,
+      });
     }
 
     // Persist the dedup key only after successful sends. If a send throws,
@@ -67,12 +79,18 @@ const crawler = new PlaywrightCrawler({
     await setLastSeenKey(groupUrl, post.dedupKey);
   },
   failedRequestHandler: async ({ page, request }, error) => {
-    console.error(`Giving up on ${request.url} after ${request.retryCount} retries:`, error);
+    console.error(
+      `Giving up on ${request.url} after ${request.retryCount} retries:`,
+      error,
+    );
     const screenshot = await page.screenshot();
     const store = await KeyValueStore.open();
-    await store.setValue(`failed-${request.id}`, screenshot, { contentType: 'image/png' });
+    await store.setValue(`failed-${request.id}`, screenshot, {
+      contentType: "image/png",
+    });
   },
 });
 
 await crawler.run(groupUrls.map((url) => ({ url })));
+// @see node_modules/apify/dist/actor.js:288
 await Actor.exit();
