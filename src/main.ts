@@ -34,6 +34,7 @@ const proxyConfiguration = useResidentialProxy
 
 const crawler = new PlaywrightCrawler({
   proxyConfiguration,
+  navigationTimeoutSecs: 120,
   launchContext: {
     launchOptions: {
       args: ["--disable-blink-features=AutomationControlled"],

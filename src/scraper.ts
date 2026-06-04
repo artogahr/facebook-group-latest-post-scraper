@@ -14,7 +14,7 @@ export async function scrapeLatestPost(page: Page, groupUrl: string): Promise<Po
     if (!storyEl) return null;
 
     const text = storyEl.textContent?.trim() ?? '';
-    const linkEl = document.querySelector('a[href*="/posts/"], a[href*="/permalink/"]');
+    const linkEl = storyEl.querySelector('a[href*="/posts/"], a[href*="/permalink/"]');
     const url = linkEl?.getAttribute('href') ?? null;
     return { text, url };
   });

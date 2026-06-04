@@ -6,11 +6,11 @@ function groupUrlToKey(groupUrl: string): string {
 }
 
 export async function getLastSeenKey(groupUrl: string): Promise<string | null> {
-  const store = await KeyValueStore.open();
+  const store = await KeyValueStore.open('facebook-group-monitor');
   return store.getValue<string>(groupUrlToKey(groupUrl));
 }
 
 export async function setLastSeenKey(groupUrl: string, dedupKey: string): Promise<void> {
-  const store = await KeyValueStore.open();
+  const store = await KeyValueStore.open('facebook-group-monitor');
   await store.setValue(groupUrlToKey(groupUrl), dedupKey);
 }

@@ -46,4 +46,12 @@ describe('deduplication', () => {
       '/groups/free.stuff.in.prague/posts/789',
     );
   });
+
+  it('opens the named persistent store so dedup keys survive across runs', async () => {
+    mockStore.getValue.mockResolvedValueOnce(null);
+
+    await getLastSeenKey('https://www.facebook.com/groups/free.stuff.in.prague');
+
+    expect(KeyValueStore.open).toHaveBeenCalledWith('facebook-group-monitor');
+  });
 });
